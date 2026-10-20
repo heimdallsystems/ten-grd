@@ -162,8 +162,11 @@ No claim is made for authentication, ordinary per-action authorization,
 noninterference/timing channels, arbitrary code verification, prompt injection
 prevention, raw-access bypass prevention, or whole-system mathematical safety.
 
-The original whitepaper's named 2026 CVE identifiers were not verified and are
-not used as established evidence or as implementation requirements.
+CVE-2026-40967 and CVE-2026-89032 have now been checked against vendor/CNA
+advisories. Their failure patterns guide regression requirements; they do not
+define the scope of GRD or establish full coverage. See
+[the security regression guide](security-regression-guide.md) for sources,
+current coverage, and required retrieval/cache adapter acceptance tests.
 
 ## References
 

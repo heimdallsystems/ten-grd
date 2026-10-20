@@ -103,6 +103,13 @@ database, vector-store, cache, framework, or authentication integration.
 See [the specification](docs/technical-specification.md) and
 [the threat model](docs/threat-model.md) for extension requirements.
 
+## Incident-inspired regression requirements
+
+The [security regression guide](docs/security-regression-guide.md) uses verified
+Spring AI filter-injection and LiteLLM cache-isolation advisories to define
+general attack patterns and adapter acceptance criteria. These are regression
+guides, not claims of complete CVE mitigation or existing cache integrations.
+
 ## Development
 
 ```sh

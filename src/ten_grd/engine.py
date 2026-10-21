@@ -48,6 +48,24 @@ class Z3InvariantEngine:
     def verify_selector(self, context: TenantContext, selector) -> VerificationResult:
         return self._verify(context, selector, "")
 
+    def verify_scope(self, context: TenantContext, selector, *, required) -> VerificationResult:
+        """Prove tenant, subject, policy and additional cache scope dimensions."""
+        try:
+            if type(context) is not TenantContext:
+                raise InvalidOperationError("Validated context required")
+            expected = {"tenant_id": context.tenant_id, "subject_id": context.subject_id,
+                        "policy_version": context.policy_version}
+            extra = dict(required)
+            if any(key in expected and expected[key] != value for key, value in extra.items()):
+                return VerificationResult(VerificationStatus.VIOLATION, "", "",
+                                          "Scope conflicts with authenticated context")
+            expected.update(extra)
+            validate_predicate(And(tuple(Eq(k, v) for k, v in expected.items())))
+            return self._verify(context, selector, "", required=expected)
+        except Exception:
+            return VerificationResult(VerificationStatus.UNSUPPORTED, "", "",
+                                      "Scope requirements are unsupported")
+
     def verify_operation(self, context: TenantContext,
                          operation: Operation) -> VerificationResult:
         try:
@@ -65,14 +83,14 @@ class Z3InvariantEngine:
             return VerificationResult(VerificationStatus.UNSUPPORTED, "", "",
                                       "Operation is outside the supported contract")
 
-    def _verify(self, context, selector, digest):
+    def _verify(self, context, selector, digest, required=None):
         try:
             if type(context) is not TenantContext:
                 raise InvalidOperationError("A validated context is required")
             validate_predicate(selector)
             if not digest:
                 raw = json.dumps([context.tenant_id, context.policy_version,
-                                  predicate_data(selector)], ensure_ascii=True)
+                                  predicate_data(selector), required], ensure_ascii=True)
                 digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
             # Per-call contexts prevent Z3 AST/solver sharing across requests.
             ctx = z3.Context()
@@ -100,10 +118,14 @@ class Z3InvariantEngine:
                 return z3.Not(compile_node(node.term))
 
             selected = compile_node(selector)
-            owner, owner_present = field("tenant_id")
-            violation = z3.Or(z3.Not(owner_present),
-                              owner != z3.StringVal(context.tenant_id, ctx=ctx))
-            solver.add(selected, violation)
+            expected = {"tenant_id": context.tenant_id}
+            expected.update(required or {})
+            violations = []
+            for name, expected_value in expected.items():
+                value, present = field(name)
+                violations.append(z3.Or(z3.Not(present),
+                                        value != z3.StringVal(expected_value, ctx=ctx)))
+            solver.add(selected, z3.Or(*violations))
             outcome = solver.check()
             if outcome == z3.unsat:
                 status, reason = VerificationStatus.PROVEN, "Selector preserves tenant ownership"

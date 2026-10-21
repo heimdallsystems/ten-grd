@@ -19,3 +19,7 @@ class VerificationError(GuardError):
 
 class IsolationViolationError(VerificationError):
     """A modeled violation or foreign-owned result was detected."""
+
+
+class AdapterError(GuardError):
+    """A backend operation failed; execution never falls back to broader scope."""

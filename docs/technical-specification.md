@@ -1,6 +1,6 @@
 # Tennant Guard technical specification
 
-Version 0.1 — 20 October 2026
+Version 0.2 — 20 October 2026
 
 ## Objective and audience
 
@@ -11,7 +11,14 @@ products, not dependencies or the architecture for this project.
 The core requirement is that protected operations never expose or modify
 foreign-owned data. When isolation cannot be established, deny the operation.
 
-## Implemented release contract
+## Backend integration contract
+
+Version 0.2 adds optional SQLite/PostgreSQL storage, Qdrant retrieval, Redis
+exact caching, Qdrant semantic caching, and invocation-scoped LangChain tools.
+The [integration guide](integrations.md) defines setup, backend semantics,
+validation, and deployment responsibilities.
+
+## Core release contract
 
 Python package ten_grd provides:
 
@@ -72,7 +79,8 @@ are 256 nodes, depth 32, field length 128, and literal length 4096. No arbitrary
 SQL, backend syntax, numeric comparisons, null values, joins, or policy
 expressions are translated implicitly.
 
-The initial engine returns redacted violation reasons. Extracting detailed
+The engine also verifies tenant, subject, policy and additional cache scope
+dimensions through verify_scope; unknown results deny. It returns redacted violation reasons. Extracting detailed
 counterexamples with safe field-level redaction is future work.
 
 ## Execution binding
@@ -130,13 +138,14 @@ service identity, expiry, replay controls, and worker-side revalidation.
 Delegated agents cannot expand tenant scope merely by passing a different ID.
 
 Memory, retrieval results, generated summaries, embeddings, and cached outputs
-must retain owner/provenance. A future cache adapter must partition writes,
+must retain owner/provenance. Cache adapters partition writes,
 lookup, refresh, invalidation, and semantic similarity by tenant and relevant
 authorization versions.
 
 ## CI and release acceptance
 
-The initial test suite is the release gate for the supported in-memory contract.
+The test suite gates the core contract and installed adapters. Service-backed
+variants are mandatory in integration CI; missing service coverage fails there.
 It must cover direct foreign ownership, missing identity, OR/NOT selector attacks,
 write partitioning, reserved metadata, immutable payloads, unsupported syntax,
 solver failures/unknown, evidence mismatch, whole-batch result validation, nested
@@ -153,10 +162,10 @@ baseline check must never substitute for the absolute invariant.
 
 ## Roadmap and nonclaims
 
-Production backend adapters, async remote adapter APIs, signed worker contexts,
-cache/retrieval/agent framework integrations, deployment coverage gates,
+Native async remote adapter APIs, signed worker contexts,
+additional backend/framework integrations, deployment coverage gates,
 durable audit evidence, safe detailed counterexamples, proof caching, and
-performance benchmarks are not implemented in 0.1.
+performance benchmarks remain future work.
 
 No claim is made for authentication, ordinary per-action authorization,
 noninterference/timing channels, arbitrary code verification, prompt injection

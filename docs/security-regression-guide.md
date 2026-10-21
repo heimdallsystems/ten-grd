@@ -41,10 +41,10 @@ Maintainer context: https://github.com/BerriAI/litellm/pull/39590
 | Filter values contain query syntax | Reference evaluator treats values as literals | Real converter parameterization/escaping tests |
 | Filter key injects backend syntax | Unsupported field syntax rejected | Backend-specific accepted-name mapping |
 | Foreign data returned by an adapter | Whole batch rejected before caller receives it | Backend access and side effects remain adapter responsibilities |
-| Cache write/read scope differs | No cache adapter implemented | Guarded cache operations and drift tests |
-| Similar prompt selects a foreign completion | No semantic cache implemented | Hard scope partition before similarity retrieval |
+| Cache write/read scope differs | Redis and semantic cache adapters bind one immutable scope | Guarded cache operations and drift tests |
+| Similar prompt selects a foreign completion | Qdrant semantic cache applies hard scope before similarity | Hard scope partition before similarity retrieval |
 | Cached tool calls cross scope | Foreign Record payload rejected by the generic client | Actual cache and agent execution integration |
-| Missing identity broadens cache scope | No general tenant fallback in current context API | Cache adapter must reject missing required scope |
+| Missing identity broadens cache scope | Missing required context denies; no cache scope fallback | Cache adapter must reject missing required scope |
 | Same-tenant users have different permissions | Host owns within-tenant authorization | Cache scope must include required subject/permission dimensions |
 
 There is no filter_applied flag or runtime decorator in the current API.
@@ -65,7 +65,7 @@ ownership, backend selection, and executed operation agree.
 7. Reject foreign provenance before reranking, LLM ingestion, streaming,
    logging, callbacks, or caching can expose it.
 
-## Cache adapter design requirements — not implemented
+## Cache adapter requirements — implemented foundation and release criteria
 
 ### Scope and key construction
 Create one immutable CacheScope from validated context and host authorization.
@@ -129,3 +129,11 @@ catalogue or justify a claim of 100 percent protection.
 
 Existing source fixes remain necessary in affected integrations. GRD does not
 patch Spring AI or LiteLLM and currently has no integration with either.
+
+## Version 0.2 implementation evidence
+
+Redis exact caching and Qdrant semantic caching now implement the scope, envelope,
+TTL, and invalidation foundation. LangChain tools bind context at invocation.
+See [integration documentation](integrations.md) and the backend-parametrized
+tests for the supported contract. Live services remain required to establish
+server compatibility; local/fake results must be reported separately.

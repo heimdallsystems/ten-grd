@@ -57,3 +57,14 @@ internals, side-channel resistance, or authentication correctness.
 No production vector store, cache, relational database, or agent framework has
 been certified by this initial implementation. Do not represent the reference
 adapter as persistent storage or a deployed system-wide guarantee.
+
+## Integration boundary in 0.2
+
+SQLite/PostgreSQL, Qdrant, Redis, semantic cache and LangChain integrations are
+now implemented. Backend clients, credentials, schema/collection provisioning,
+model configuration, and the host authorization boundary remain trusted.
+A supported adapter is not a certification of the backend or deployment.
+The integration guide documents exact supported semantics and service tests.
+UUID/hash identifiers use collision resistance as an operational assumption;
+Z3 does not prove hash injectivity. Cache hits additionally validate full scope
+and request binding independently of their hashed key.

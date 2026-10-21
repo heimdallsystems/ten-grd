@@ -98,8 +98,9 @@ raw credentials or bypassing the client. Custom adapters must execute exactly th
 checked operation and uphold ownership atomically. Read-result validation cannot
 undo an unsafe write by a faulty adapter.
 
-The first release includes an in-memory reference adapter, not a production
-database, vector-store, cache, framework, or authentication integration.
+Version 0.2 adds SQLite/PostgreSQL storage, Qdrant retrieval, Redis exact caching,
+Qdrant semantic caching, and LangChain tools. See [integration setup and assurance
+boundaries](docs/integrations.md). Authentication remains the host responsibility.
 See [the specification](docs/technical-specification.md) and
 [the threat model](docs/threat-model.md) for extension requirements.
 
@@ -108,7 +109,13 @@ See [the specification](docs/technical-specification.md) and
 The [security regression guide](docs/security-regression-guide.md) uses verified
 Spring AI filter-injection and LiteLLM cache-isolation advisories to define
 general attack patterns and adapter acceptance criteria. These are regression
-guides, not claims of complete CVE mitigation or existing cache integrations.
+guides, not claims of complete CVE mitigation or certification of affected third-party products.
+
+## Integrations
+
+Install optional backends with `python -m pip install -e ".[all]"`.
+See [the integration guide](docs/integrations.md) for usage, supported semantics,
+server-backed test setup, and deployment requirements.
 
 ## Development
 

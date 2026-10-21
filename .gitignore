@@ -6,3 +6,7 @@ __pycache__/
 build/
 dist/
 .coverage
+
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

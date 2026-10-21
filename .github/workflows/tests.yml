@@ -71,3 +71,4 @@ jobs:
                   time.sleep(1)
       - run: python -m pytest -q
       - run: python examples/agent_memory.py
+      - run: python examples/tenant_rag.py

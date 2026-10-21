@@ -50,6 +50,26 @@ Tool implementations can call `memory.get`, `search`, `put`, and `delete`
 inside the host-established scope. A tool argument cannot override the tenant
 parameter because the guarded methods expose no such parameter.
 
+## Try tenant-scoped RAG
+
+Run a local vector retrieval and answer assembly example without API keys:
+
+```sh
+python -m pip install -e ".[qdrant]"
+python examples/tenant_rag.py
+```
+
+The example seeds two tenants with the same document ID. A foreign document has
+the closest vector, but only the active tenant's document reaches the answer.
+It also demonstrates an OR expression attempting to widen access and an explicit
+foreign-tenant selector returning no documents. Fixed vectors and extractive
+answers keep the demo reproducible; production embeddings and LLM generation
+remain host integrations. Retrieved content is still untrusted input.
+
+See the [developer adoption roadmap](docs/roadmap.md) for release priorities.
+The [local validation report](docs/validation.md) records tested versions,
+results, and outstanding live-service coverage.
+
 ## Selectors and formal checks
 
 ```python

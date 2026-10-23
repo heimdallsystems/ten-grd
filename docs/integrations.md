@@ -161,6 +161,12 @@ This release integrates LangChain tools, not every agent framework or agent
 lifecycle. The host remains responsible for authentication, tenant membership,
 within-tenant permissions, cancellation, and every unguarded data path.
 
+## Claude Agent SDK examples
+
+See the [memory and RAG setup guide](../examples/claude_agents/README.md) for
+host-bound in-process MCP tools, local checks, and opt-in live Claude execution.
+These examples do not change the core SDK or establish live-model validation.
+
 ## Validation and services
 
     docker compose -f compose.integration.yml up -d

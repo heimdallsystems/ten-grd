@@ -23,7 +23,8 @@ python -m pip install -r examples/claude_agents/requirements.txt
 
 For development against this checkout, replace the first command with
 `python -m pip install -e .`. The example dependencies are pinned to the versions
-used for local validation: Claude Agent SDK 0.2.172 and Qdrant client 1.19.1.
+used for local validation: Claude Agent SDK 0.2.172, MCP 2.3.0 and Qdrant client
+1.19.1.
 
 ## Check locally without calling Claude
 

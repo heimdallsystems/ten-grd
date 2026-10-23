@@ -72,6 +72,7 @@ jobs:
           echo "PIP_CONSTRAINT=$RUNNER_TEMP/security-constraints.txt" >> "$GITHUB_ENV"
           python -m pip install 'certifi>=2026.10.19'
       - run: python -m pip install -e ".[dev,all]"
+      - run: python -m pip install -r examples/claude_agents/requirements.txt
       - name: Wait for Qdrant
         shell: python
         run: |
@@ -89,3 +90,5 @@ jobs:
       - run: python -m pytest -q
       - run: python examples/agent_memory.py
       - run: python examples/tenant_rag.py
+      - run: python -m examples.claude_agents.memory_agent
+      - run: python -m examples.claude_agents.rag_agent

@@ -137,6 +137,13 @@ Install optional backends with `python -m pip install -e ".[all]"`.
 See [the integration guide](docs/integrations.md) for usage, supported semantics,
 server-backed test setup, and deployment requirements.
 
+## Claude Agent SDK examples
+
+The [Claude memory and RAG examples](examples/claude_agents/README.md) use
+host-bound MCP tools and synthetic tenant data. Both provide deterministic local
+checks and opt-in live Claude execution. Live authentication and model responses
+remain untested; see the setup guide for commands and assurance limits.
+
 ## Development
 
 ```sh

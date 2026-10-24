@@ -34,10 +34,26 @@ sandbox. No SDK workaround or weakening of async tests was needed.
 ```sh
 python -m pip install -e ".[dev,all]"
 python -m pytest -q -o faulthandler_timeout=30
-python examples/agent_memory.py
-python examples/tenant_rag.py
 ```
 
-For mandatory live-service coverage, follow integrations.md and configure all
-three service URLs plus GRD_REQUIRE_SERVICES=1. Local/fake backends do not
-establish deployed server compatibility or a universal isolation guarantee.
+The examples moved to the public
+[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository;
+CI's public-examples job runs them against this checkout.
+
+For mandatory live-service coverage:
+
+    docker compose -f compose.integration.yml up -d
+    # Set environment variables in your shell:
+    # GRD_POSTGRES_DSN=postgresql://grd:grd_test@localhost:5432/grd_test
+    # GRD_REDIS_URL=redis://localhost:6379/0
+    # GRD_QDRANT_URL=http://localhost:6333
+    # GRD_REQUIRE_SERVICES=1
+    python -m pytest -q
+
+Use isolated test services, not production data. The compose file binds ports to
+loopback and uses development-only credentials. PostgreSQL test tenants and
+Qdrant test collections are unique per test; Redis keys use unique namespaces.
+Tests never flush a shared Redis database or truncate unrelated SQL data.
+Without service variables, service variants are explicitly skipped.
+Local/fake backends do not establish deployed server compatibility or a
+universal isolation guarantee.

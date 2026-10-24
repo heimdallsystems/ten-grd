@@ -21,6 +21,7 @@ all = ["psycopg[binary]>=3.2,<4", "qdrant-client>=1.15,<2", "redis>=5,<9", "lang
 
 [project.urls]
 # The source repository is private; keep these URLs pointing at public pages.
+Documentation = "https://ikurira.github.io/ten-grd-examples/"
 Examples = "https://github.com/Ikurira/ten-grd-examples"
 Issues = "https://github.com/Ikurira/ten-grd-examples/issues"
 

@@ -1,5 +1,8 @@
 # Claude Agent SDK example validation
 
+Historical record. The examples and their tests now live in the public
+[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository.
+
 Local draft validation on 22 October 2026, Linux / CPython 3.12.14.
 
 - Claude Agent SDK: 0.2.172; MCP: 2.3.0; Qdrant client: 1.19.1.

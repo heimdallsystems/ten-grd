@@ -163,30 +163,18 @@ within-tenant permissions, cancellation, and every unguarded data path.
 
 ## Claude Agent SDK examples
 
-See the [memory and RAG setup guide](../examples/claude_agents/README.md) for
-host-bound in-process MCP tools, local checks, and opt-in live Claude execution.
+See the [memory and RAG setup guide](https://github.com/Ikurira/ten-grd-examples/tree/main/claude_agents)
+for host-bound in-process MCP tools, local checks, and opt-in live Claude execution.
 These examples do not change the core SDK or establish live-model validation.
 
-## Validation and services
+## Validation
 
-    docker compose -f compose.integration.yml up -d
-    # Set environment variables in your shell:
-    # GRD_POSTGRES_DSN=postgresql://grd:grd_test@localhost:5432/grd_test
-    # GRD_REDIS_URL=redis://localhost:6379/0
-    # GRD_QDRANT_URL=http://localhost:6333
-    # GRD_REQUIRE_SERVICES=1
-    python -m pytest -q
+Release CI runs the integration tests against real PostgreSQL, Redis and Qdrant
+servers in addition to embedded backends, and fails if any of those services is
+missing. SQLite, local Qdrant, fakeredis and LangChain tools are also tested
+without servers; fakeredis does not establish compatibility with a deployed
+Redis server.
 
-Use isolated test services, not production data. The compose file binds ports to
-loopback and uses development-only credentials. PostgreSQL test tenants and
-Qdrant test collections are unique per test; Redis keys use unique namespaces.
-Tests never flush a shared Redis database or truncate unrelated SQL data.
-
-Without service variables, service variants are explicitly skipped. SQLite,
-Qdrant local, fakeredis, and real LangChain tools can run without Docker.
-fakeredis does not establish compatibility with a deployed Redis server.
-CI's integration job sets GRD_REQUIRE_SERVICES=1, so missing services fail;
-it exercises PostgreSQL, Redis and Qdrant servers in addition to embedded tests.
-
-Report test results with backend/version and skipped coverage. No test result
+Test your own deployment against isolated services, not production data, and
+report results with backend versions and skipped coverage. No test result
 establishes a universal production security guarantee.

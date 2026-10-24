@@ -28,7 +28,6 @@ jobs:
           python -m pip install 'certifi>=2026.10.19'
       - run: python -m pip install -e ".[dev]"
       - run: python -m pytest -q
-      - run: python examples/agent_memory.py
 
   integrations:
     runs-on: ubuntu-latest
@@ -72,7 +71,6 @@ jobs:
           echo "PIP_CONSTRAINT=$RUNNER_TEMP/security-constraints.txt" >> "$GITHUB_ENV"
           python -m pip install 'certifi>=2026.10.19'
       - run: python -m pip install -e ".[dev,all]"
-      - run: python -m pip install -r examples/claude_agents/requirements.txt
       - name: Wait for Qdrant
         shell: python
         run: |
@@ -88,7 +86,45 @@ jobs:
                       raise
                   time.sleep(1)
       - run: python -m pytest -q
-      - run: python examples/agent_memory.py
-      - run: python examples/tenant_rag.py
-      - run: python -m examples.claude_agents.memory_agent
-      - run: python -m examples.claude_agents.rag_agent
+
+  # Examples and public docs live in Ikurira/ten-grd-examples. Run them against
+  # this checkout so SDK changes are tested before release, and keep the public
+  # copies of the design docs identical to the ones here.
+  public-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Ikurira/ten-grd-examples
+          path: ten-grd-examples
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Bootstrap verified pip and certificate constraints
+        shell: bash
+        run: |
+          python -m pip --isolated --disable-pip-version-check install --no-deps "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+          printf 'pip==26.2.2\ncertifi>=2026.10.19\nsigstore>=4.5.1\n' > "$RUNNER_TEMP/security-constraints.txt"
+          echo "PIP_CONSTRAINT=$RUNNER_TEMP/security-constraints.txt" >> "$GITHUB_ENV"
+          python -m pip install 'certifi>=2026.10.19'
+      - name: Public design docs match this repository
+        run: |
+          for doc in integrations threat-model technical-specification security-regression-guide; do
+            diff -u "docs/$doc.md" "ten-grd-examples/docs/$doc.md"
+          done
+      - name: Install this checkout with the examples' other pins
+        shell: bash
+        run: |
+          python -m pip install -e ".[qdrant]"
+          grep -v '^ten-grd' ten-grd-examples/requirements.txt > "$RUNNER_TEMP/example-requirements.txt"
+          python -m pip install -r "$RUNNER_TEMP/example-requirements.txt" "pytest>=8,<10"
+      - name: Run public examples offline
+        working-directory: ten-grd-examples
+        run: |
+          python -m pytest -q
+          python basic/agent_memory.py
+          python basic/tenant_rag.py
+          python -m claude_agents.memory_agent
+          python -m claude_agents.rag_agent

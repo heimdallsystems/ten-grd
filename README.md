@@ -20,7 +20,8 @@ python -m pip install ten-grd
 
 The distribution is named `ten-grd`; the Python import is `ten_grd`.
 Runnable examples, including Claude Agent SDK agents, are in the public
-[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository.
+[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository, and the
+documentation is at [ikurira.github.io/ten-grd-examples](https://ikurira.github.io/ten-grd-examples/).
 
 ## Use in an agent memory tool
 
@@ -150,7 +151,7 @@ and assurance limits.
 ```sh
 python -m pip install -e ".[dev]"
 python -m pytest -q
-python -m compileall -q src examples
+python -m compileall -q src
 ```
 
 Tests cover foreign access, tenant scope injection, result leakage, write

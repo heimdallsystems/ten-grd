@@ -10,20 +10,17 @@ and validates complete result batches before returning them.
 This is a standalone project with its own audience and architecture. It has no
 dependency on invariant-sast or AWS.
 
-## Install from source
+## Install
 
 Requires Python 3.10 or later:
 
 ```sh
-git clone https://github.com/Ikurira/10_grd.git
-cd 10_grd
-python -m pip install -e ".[dev]"
-python -m pytest
-python examples/agent_memory.py
+python -m pip install ten-grd
 ```
 
 The distribution is named `ten-grd`; the Python import is `ten_grd`.
-This repository does not imply that a release has been published to PyPI.
+Runnable examples, including Claude Agent SDK agents, are in the public
+[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository.
 
 ## Use in an agent memory tool
 
@@ -55,8 +52,10 @@ parameter because the guarded methods expose no such parameter.
 Run a local vector retrieval and answer assembly example without API keys:
 
 ```sh
-python -m pip install -e ".[qdrant]"
-python examples/tenant_rag.py
+git clone https://github.com/Ikurira/ten-grd-examples.git
+cd ten-grd-examples
+python -m pip install -r requirements.txt
+python basic/tenant_rag.py
 ```
 
 The example seeds two tenants with the same document ID. A foreign document has
@@ -65,10 +64,6 @@ It also demonstrates an OR expression attempting to widen access and an explicit
 foreign-tenant selector returning no documents. Fixed vectors and extractive
 answers keep the demo reproducible; production embeddings and LLM generation
 remain host integrations. Retrieved content is still untrusted input.
-
-See the [developer adoption roadmap](docs/roadmap.md) for release priorities.
-The [local validation report](docs/validation.md) records tested versions,
-results, and outstanding live-service coverage.
 
 ## Selectors and formal checks
 
@@ -119,30 +114,36 @@ checked operation and uphold ownership atomically. Read-result validation cannot
 undo an unsafe write by a faulty adapter.
 
 Version 0.2 adds SQLite/PostgreSQL storage, Qdrant retrieval, Redis exact caching,
-Qdrant semantic caching, and LangChain tools. See [integration setup and assurance
-boundaries](docs/integrations.md). Authentication remains the host responsibility.
-See [the specification](docs/technical-specification.md) and
-[the threat model](docs/threat-model.md) for extension requirements.
+Qdrant semantic caching, and LangChain tools. Authentication remains the host
+responsibility.
 
 ## Incident-inspired regression requirements
 
-The [security regression guide](docs/security-regression-guide.md) uses verified
-Spring AI filter-injection and LiteLLM cache-isolation advisories to define
-general attack patterns and adapter acceptance criteria. These are regression
-guides, not claims of complete CVE mitigation or certification of affected third-party products.
+Tests use verified Spring AI filter-injection and LiteLLM cache-isolation
+advisories to define general attack patterns and adapter acceptance criteria.
+These are regression guides, not claims of complete CVE mitigation or
+certification of affected third-party products.
 
 ## Integrations
 
-Install optional backends with `python -m pip install -e ".[all]"`.
-See [the integration guide](docs/integrations.md) for usage, supported semantics,
-server-backed test setup, and deployment requirements.
+Install optional backends as extras:
+
+| Backend | Install |
+| --- | --- |
+| PostgreSQL storage | `python -m pip install "ten-grd[postgres]"` |
+| Qdrant retrieval and semantic cache | `python -m pip install "ten-grd[qdrant]"` |
+| Redis exact cache | `python -m pip install "ten-grd[redis]"` |
+| LangChain tools | `python -m pip install "ten-grd[langchain]"` |
+| All of the above | `python -m pip install "ten-grd[all]"` |
+
+SQLite storage needs no extra.
 
 ## Claude Agent SDK examples
 
-The [Claude memory and RAG examples](examples/claude_agents/README.md) use
-host-bound MCP tools and synthetic tenant data. Both provide deterministic local
-checks and opt-in live Claude execution. Live authentication and model responses
-remain untested; see the setup guide for commands and assurance limits.
+The [Claude memory and RAG examples](https://github.com/Ikurira/ten-grd-examples/tree/main/claude_agents)
+use host-bound MCP tools and synthetic tenant data. Both provide deterministic
+local checks and opt-in live Claude execution; see their setup guide for commands
+and assurance limits.
 
 ## Development
 

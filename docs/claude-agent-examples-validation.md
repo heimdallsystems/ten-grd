@@ -1,7 +1,7 @@
 # Claude Agent SDK example validation
 
 Historical record. The examples and their tests now live in the public
-[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository.
+[ten-grd-examples](https://github.com/heimdallsystems/ten-grd-examples) repository.
 
 Local draft validation on 22 October 2026, Linux / CPython 3.12.14.
 

@@ -20,10 +20,10 @@ langchain = ["langchain-core>=1,<2"]
 all = ["psycopg[binary]>=3.2,<4", "qdrant-client>=1.15,<2", "redis>=5,<9", "langchain-core>=1,<2"]
 
 [project.urls]
-# The source repository is private; keep these URLs pointing at public pages.
-Documentation = "https://ikurira.github.io/ten-grd-examples/"
-Examples = "https://github.com/Ikurira/ten-grd-examples"
-Issues = "https://github.com/Ikurira/ten-grd-examples/issues"
+Documentation = "https://heimdallsystems.github.io/ten-grd-examples/"
+Repository = "https://github.com/heimdallsystems/ten-grd"
+Examples = "https://github.com/heimdallsystems/ten-grd-examples"
+Issues = "https://github.com/heimdallsystems/ten-grd/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

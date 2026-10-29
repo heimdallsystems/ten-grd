@@ -37,7 +37,7 @@ python -m pytest -q -o faulthandler_timeout=30
 ```
 
 The examples moved to the public
-[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository;
+[ten-grd-examples](https://github.com/heimdallsystems/ten-grd-examples) repository;
 CI's public-examples job runs them against this checkout.
 
 For mandatory live-service coverage:

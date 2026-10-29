@@ -20,8 +20,8 @@ python -m pip install ten-grd
 
 The distribution is named `ten-grd`; the Python import is `ten_grd`.
 Runnable examples, including Claude Agent SDK agents, are in the public
-[ten-grd-examples](https://github.com/Ikurira/ten-grd-examples) repository, and the
-documentation is at [ikurira.github.io/ten-grd-examples](https://ikurira.github.io/ten-grd-examples/).
+[ten-grd-examples](https://github.com/heimdallsystems/ten-grd-examples) repository, and the
+documentation is at [heimdallsystems.github.io/ten-grd-examples](https://heimdallsystems.github.io/ten-grd-examples/).
 
 ## Use in an agent memory tool
 
@@ -53,7 +53,7 @@ parameter because the guarded methods expose no such parameter.
 Run a local vector retrieval and answer assembly example without API keys:
 
 ```sh
-git clone https://github.com/Ikurira/ten-grd-examples.git
+git clone https://github.com/heimdallsystems/ten-grd-examples.git
 cd ten-grd-examples
 python -m pip install -r requirements.txt
 python basic/tenant_rag.py
@@ -141,7 +141,7 @@ SQLite storage needs no extra.
 
 ## Claude Agent SDK examples
 
-The [Claude memory and RAG examples](https://github.com/Ikurira/ten-grd-examples/tree/main/claude_agents)
+The [Claude memory and RAG examples](https://github.com/heimdallsystems/ten-grd-examples/tree/main/claude_agents)
 use host-bound MCP tools and synthetic tenant data. Both provide deterministic
 local checks and opt-in live Claude execution; see their setup guide for commands
 and assurance limits.

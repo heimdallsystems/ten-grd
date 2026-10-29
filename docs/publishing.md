@@ -10,8 +10,8 @@ For a new project, sign in at https://pypi.org/manage/account/publishing/ and ad
 pending GitHub publisher with these exact values:
 
 - PyPI project: `ten-grd`
-- Owner: `Ikurira`
-- Repository: `10_grd`
+- Owner: `heimdallsystems`
+- Repository: `ten-grd`
 - Workflow filename: `publish.yml`
 - Environment: `pypi`
 

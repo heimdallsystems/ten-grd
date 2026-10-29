@@ -87,7 +87,7 @@ jobs:
                   time.sleep(1)
       - run: python -m pytest -q
 
-  # Examples and public docs live in Ikurira/ten-grd-examples. Run them against
+  # Examples and public docs live in heimdallsystems/ten-grd-examples. Run them against
   # this checkout so SDK changes are tested before release, and keep the public
   # copies of the design docs identical to the ones here.
   public-examples:
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          repository: Ikurira/ten-grd-examples
+          repository: heimdallsystems/ten-grd-examples
           path: ten-grd-examples
       - uses: actions/setup-python@v5
         with:

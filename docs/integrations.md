@@ -163,7 +163,7 @@ within-tenant permissions, cancellation, and every unguarded data path.
 
 ## Claude Agent SDK examples
 
-See the [memory and RAG setup guide](https://github.com/Ikurira/ten-grd-examples/tree/main/claude_agents)
+See the [memory and RAG setup guide](https://github.com/heimdallsystems/ten-grd-examples/tree/main/claude_agents)
 for host-bound in-process MCP tools, local checks, and opt-in live Claude execution.
 These examples do not change the core SDK or establish live-model validation.
 

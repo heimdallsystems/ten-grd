@@ -146,6 +146,28 @@ use host-bound MCP tools and synthetic tenant data. Both provide deterministic
 local checks and opt-in live Claude execution; see their setup guide for commands
 and assurance limits.
 
+## Probe your agent for tenant leaks (preview)
+
+`ten-grd probe` checks an agent you already built, whether or not it uses ten-grd.
+It plants a unique canary record in each synthetic test tenant, signs in as one
+tenant, tries to reach the others' canaries (direct questions, instruction
+injection, the other tenant's exact text, tenant-switch requests, and hostile tool
+arguments), and reports every canary that crosses over:
+
+```sh
+ten-grd probe init        # writes tenguard_probe.py: fill in sign_in, seed and ask
+ten-grd probe run --out leak-report.md --json leak-report.json
+```
+
+Exit codes: 0 no leak found, 1 leak found, 2 inconclusive (for example, a tenant
+could not reach its own canary, so a clean result would mean nothing). The verdict
+comes only from canaries; no model judges whether data leaked.
+
+Run it against a test environment with synthetic tenants, never production. A
+finding proves a leak for that input; no finding means the attempted attacks did
+not leak and is not proof of isolation. The probe exercises behaviour through your
+harness and does not verify source code.
+
 ## Development
 
 ```sh

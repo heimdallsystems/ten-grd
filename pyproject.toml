@@ -11,6 +11,9 @@ requires-python = ">=3.10"
 license = "Apache-2.0"
 dependencies = ["z3-solver>=4.13,<6", "certifi>=2026.10.19"]
 
+[project.scripts]
+ten-grd = "ten_grd.probe.cli:main"
+
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "fakeredis>=2.30,<3"]
 postgres = ["psycopg[binary]>=3.2,<4"]

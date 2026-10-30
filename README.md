@@ -117,6 +117,7 @@ undo an unsafe write by a faulty adapter.
 Version 0.2 adds SQLite/PostgreSQL storage, Qdrant retrieval, Redis exact caching,
 Qdrant semantic caching, and LangChain tools. Authentication remains the host
 responsibility.
+Version 0.3 adds `ten-grd probe`, a canary-based leak probe (preview).
 
 ## Incident-inspired regression requirements
 

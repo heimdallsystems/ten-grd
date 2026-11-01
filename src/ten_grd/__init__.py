@@ -7,7 +7,7 @@ from .exceptions import (GuardError, InvalidContextError, InvalidOperationError,
                          IsolationViolationError, VerificationError, AdapterError)
 from .predicates import And, Eq, Not, Or
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __all__ = [
     "TenantGuard", "TenantContext", "tenant_scope", "current_context",
     "InMemoryAdapter", "IsolationAdapter", "Z3InvariantEngine",

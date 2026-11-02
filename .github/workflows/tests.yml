@@ -87,9 +87,8 @@ jobs:
                   time.sleep(1)
       - run: python -m pytest -q
 
-  # Examples and public docs live in heimdallsystems/ten-grd-examples. Run them against
-  # this checkout so SDK changes are tested before release, and keep the public
-  # copies of the design docs identical to the ones here.
+  # Examples live in heimdallsystems/ten-grd-examples. Run them against this
+  # checkout so SDK changes are tested before release.
   public-examples:
     runs-on: ubuntu-latest
     steps:
@@ -109,11 +108,6 @@ jobs:
           printf 'pip==26.2.2\ncertifi>=2026.10.19\nsigstore>=4.5.1\n' > "$RUNNER_TEMP/security-constraints.txt"
           echo "PIP_CONSTRAINT=$RUNNER_TEMP/security-constraints.txt" >> "$GITHUB_ENV"
           python -m pip install 'certifi>=2026.10.19'
-      - name: Public design docs match this repository
-        run: |
-          for doc in integrations threat-model security-regression-guide; do
-            diff -u "docs/$doc.md" "ten-grd-examples/docs/$doc.md"
-          done
       - name: Install this checkout with the examples' other pins
         shell: bash
         run: |

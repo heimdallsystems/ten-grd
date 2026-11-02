@@ -1,0 +1,43 @@
+site_name: Ten-Grd
+site_description: Tenant isolation guards for developers building agentic tools
+site_url: https://heimdallsystems.github.io/ten-grd/
+repo_url: https://github.com/heimdallsystems/ten-grd
+repo_name: ten-grd
+edit_uri: ""
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+nav:
+  - Overview: index.md
+  - Examples: examples.md
+  - Leak probe: probe.md
+  - Integrations: integrations.md
+  - Threat model: threat-model.md
+  - Technical specification: technical-specification.md
+  - Security regression guide: security-regression-guide.md
+
+# Repository documents that are not site pages.
+exclude_docs: |
+  dependency-security.md
+  roadmap.md

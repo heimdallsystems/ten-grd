@@ -141,8 +141,8 @@ The verdict becomes `clean`, exit code 0, with every control check passing.
    canary, then the other sends the identical request, through `ask` and through
    each tool, or a reworded one through `ask`. Because every pair runs in both
    directions, this also covers one tenant poisoning the cache for another. The
-   second tenant first sends a request nobody primed, so a finding says whether the
-   leak needed the other tenant to go first (a shared cache) or happens anyway.
+   second tenant first sends a fresh request, so a finding can say whether the leak
+   needed the other tenant to go first, which points at a shared cache.
 5. **Tries background jobs, if declared.** A job with the other tenant's text, a job
    with an extra `tenant_id`, jobs from both tenants queued together, and reading
    the other tenant's job result. If `run_jobs` accepts `fail_first`, the text and
@@ -166,7 +166,9 @@ Cache and job scenarios can also miss real leaks. A cache may not store a respon
 may expire it, or may use a similarity threshold the reworded prompt does not meet.
 A race may need timing that `run_jobs` does not reproduce. The probe cannot tell
 whether a request was served from a cache, so "needed the other tenant to go first"
-points at shared state and does not name the component.
+points at shared state and does not name the component. If a fresh request leaks too,
+the cause may be retrieval, or a similar-prompt cache matching an entry from earlier
+in the run, so the report does not rule out either.
 
 Ten-Grd's guards and the probe are separate: running the probe does not add any
 isolation to your agent. To enforce tenant scope, see [Examples](examples.md) and the

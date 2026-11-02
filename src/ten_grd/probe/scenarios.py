@@ -70,9 +70,10 @@ def _cache_requests(harness, owner_canary):
 def cache_scenarios(harness, send, canaries, reader, owner):
     """The owner primes a fresh request, then the reader repeats it.
 
-    The reader first sends a request nobody primed. If that leaks too, the finding says the
-    cause is not the cache alone. Primed responses work in both directions: the reverse
-    tenant pair runs this with the roles swapped, which also covers poisoning.
+    The reader first sends a fresh request. If that leaks too, the finding does not blame
+    priming: the cause may be retrieval, or a similar-prompt cache matching an earlier entry.
+    Primed responses work in both directions: the reverse tenant pair runs this with the
+    roles swapped, which also covers poisoning.
     """
     token = canaries[owner].token
     for attack, kind, title, prime, read in _cache_requests(harness, canaries[owner]):

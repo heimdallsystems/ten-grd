@@ -25,8 +25,8 @@ def markdown(result):
             if "order_dependent" in f:
                 lines.append("- Needed another tenant to go first: yes, this points at a shared cache"
                              if f["order_dependent"] else
-                             "- Needed another tenant to go first: no, an unprimed request leaked too, "
-                             "so check retrieval as well as any cache")
+                             "- Needed another tenant to go first: not shown, a fresh request leaked too. "
+                             "Check retrieval, and any similar-prompt cache that could match an earlier entry")
             lines += [f"- Likely fix: {f['likely_fix']}", ""]
 
     lines += ["## Coverage", "", "Attack classes this harness let the probe run. Nothing is known about the others.", "",

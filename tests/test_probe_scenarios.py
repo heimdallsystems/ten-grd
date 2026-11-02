@@ -102,6 +102,7 @@ def test_leak_without_a_cache_is_not_blamed_on_the_cache():
     found = [f for f in result["findings"] if f["attack"] == "cache-identical-prompt"]
     assert any(f.get("order_dependent") is False for f in found)
     assert not any(f.get("order_dependent") for f in found)
+    assert "Check retrieval, and any similar-prompt cache" in markdown(result)
 
 
 def test_scenario_that_cannot_prime_is_inconclusive(tmp_path):

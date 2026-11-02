@@ -37,7 +37,7 @@ and authoritative owner fields; raw backend access bypasses an in-process guard.
 
 A custom adapter must be reviewed and tested as security-critical code. A buggy
 write adapter can cause damage before result validation notices it. Follow
-adapter requirements in the [technical specification](https://heimdallsystems.github.io/ten-grd-examples/technical-specification/) before claiming support.
+adapter requirements in the [technical specification](technical-specification.md) before claiming support.
 
 The synchronous client can be used by synchronous tool functions in async
 request scopes, but it blocks while verifying and executing. It does not provide

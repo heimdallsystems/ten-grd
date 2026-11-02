@@ -21,7 +21,7 @@ python -m pip install ten-grd
 The distribution is named `ten-grd`; the Python import is `ten_grd`.
 Runnable examples, including Claude Agent SDK agents, are in the public
 [ten-grd-examples](https://github.com/heimdallsystems/ten-grd-examples) repository, and the
-documentation is at [heimdallsystems.github.io/ten-grd-examples](https://heimdallsystems.github.io/ten-grd-examples/).
+documentation is at [heimdallsystems.github.io/ten-grd](https://heimdallsystems.github.io/ten-grd/).
 
 ## Use in an agent memory tool
 
@@ -113,7 +113,7 @@ trusted. An in-process SDK cannot prevent hostile application code from using
 raw credentials or bypassing the client. Custom adapters must execute exactly the
 checked operation and uphold ownership atomically. Read-result validation cannot
 undo an unsafe write by a faulty adapter. Read the
-[technical specification](https://heimdallsystems.github.io/ten-grd-examples/technical-specification/)
+[technical specification](https://heimdallsystems.github.io/ten-grd/technical-specification/)
 before writing a custom adapter.
 
 Version 0.2 adds SQLite/PostgreSQL storage, Qdrant retrieval, Redis exact caching,

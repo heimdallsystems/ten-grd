@@ -13,12 +13,3 @@ retaining OIDC Trusted Publishing and publish attestations. The former Docker
 publisher has its own pip, unaffected by upgrading the runner's pip. Keep the
 existing publish.yml filename and pypi environment for PyPI's trusted identity.
 
-Copy the inline bootstrap along with the Invariant GitHub/GitLab CI templates.
-After creating a new virtual environment, bootstrap its pip too; installing
-certifi does not update pip's vendored certificate bundle. Existing environments
-need their own updates. If uv is used locally, upgrade it to at least 0.13.4.
-Rebuild container images with updated operating-system certificate stores.
-
-No package version is bumped by this change and existing PyPI artifacts are
-immutable. New package metadata takes effect for source installs and the next
-release. Runtime policy/isolation semantics are unchanged.

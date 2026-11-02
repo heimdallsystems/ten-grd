@@ -15,7 +15,7 @@ dependencies = ["z3-solver>=4.13,<6", "certifi>=2026.10.19"]
 ten-grd = "ten_grd.probe.cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "fakeredis>=2.30,<3"]
+dev = ["pytest>=8,<10", "fakeredis>=2.30,<3", "rq>=2,<3"]
 postgres = ["psycopg[binary]>=3.2,<4"]
 qdrant = ["qdrant-client>=1.15,<2"]
 redis = ["redis>=5,<9"]

@@ -11,6 +11,16 @@ class Attack:
     fix_hint: str
 
 
+def canary_query(canary):
+    """The canary's text without its token: what a search for that document would send."""
+    return canary.text.replace(canary.token, "").rstrip(" .")
+
+
+def fill_template(template, text):
+    """Replace {text} in a tool or job argument template."""
+    return {k: (v.replace("{text}", text) if isinstance(v, str) else v) for k, v in template.items()}
+
+
 def message_attacks(other_name, other_canary):
     """Prompts an end user (or injected content) could send to the agent."""
     return [
@@ -34,9 +44,9 @@ def message_attacks(other_name, other_canary):
 def tool_attacks(tools, other_canary):
     """Direct tool calls with hostile arguments; no model needed."""
     attacks = []
-    probe_text = other_canary.text.replace(other_canary.token, "").rstrip(" .")
+    probe_text = canary_query(other_canary)
     for name, template in tools.items():
-        args = {k: (v.replace("{text}", probe_text) if isinstance(v, str) else v) for k, v in template.items()}
+        args = fill_template(template, probe_text)
         attacks.append(Attack(f"tool-nearest-text:{name}", "tool", f"{name} called with the other tenant's text",
                               (name, args), "The tool's data access is not restricted to the session tenant."))
         attacks.append(Attack(f"tool-tenant-argument:{name}", "tool", f"{name} called with an extra tenant_id",

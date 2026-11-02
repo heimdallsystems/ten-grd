@@ -63,3 +63,90 @@ class GuardedAgent:
     def ask(self, session, message):
         hits = self.search(session, message)
         return {"answer": hits[0] if hits else "No documents found.", "tool_calls": [{"tool": "search", "hits": hits}]}
+
+
+class CachedAgent(GuardedAgent):
+    """Guarded retrieval behind an exact response cache. Keyed without the tenant unless told otherwise."""
+
+    def __init__(self, tenant_in_key=False):
+        super().__init__()
+        self.tenant_in_key = tenant_in_key
+        self.cache = {}
+
+    def _key(self, session, query):
+        return (session.tenant_id, query) if self.tenant_in_key else query
+
+    def _lookup(self, key):
+        return self.cache.get(key)
+
+    def search(self, session, query, **unexpected):
+        if unexpected:
+            raise ValueError("Unexpected tool arguments")
+        key = self._key(session, query)
+        hits = self._lookup(key)
+        if hits is None:
+            hits = self.cache[key] = super().search(session, query)
+        return hits
+
+
+class SimilarCachedAgent(CachedAgent):
+    """A similar-prompt cache: a close enough query counts as a hit."""
+
+    def _lookup(self, key):
+        tenant, query = key if self.tenant_in_key else (None, key)
+        words = set(WORD.findall(query.lower()))
+        for cached in self.cache:
+            cached_tenant, cached_query = cached if self.tenant_in_key else (None, cached)
+            other = set(WORD.findall(cached_query.lower()))
+            if tenant == cached_tenant and len(words & other) / max(len(words | other), 1) >= 0.5:
+                return self.cache[cached]
+        return None
+
+
+class JobAgent(GuardedAgent):
+    """A background worker. `bug` selects one scope mistake; None is the correct worker."""
+
+    def __init__(self, bug=None):
+        super().__init__()
+        self.bug = bug
+        self.raw = []       # The same documents, as a worker with a raw client would see them.
+        self.queue = []
+        self.results = {}
+        self.owners = {}
+        self.current = None  # The last request's context, which a careless worker inherits.
+
+    def ingest(self, session, text):
+        super().ingest(session, text)
+        self.raw.append((session.tenant_id, text))
+
+    def submit(self, session, name, arguments):
+        arguments = dict(arguments)
+        tenant_argument = arguments.pop("tenant_id", None)
+        if tenant_argument and self.bug != "tenant-argument":
+            raise ValueError("Unexpected job arguments")
+        handle = f"job-{len(self.owners)}"
+        self.owners[handle] = session.tenant_id
+        self.queue.append((handle, session, arguments["query"], tenant_argument))
+        self.current = session
+        return handle
+
+    def _unscoped(self, query, tenant=None):
+        pool = [text for owner, text in self.raw if tenant is None or owner == tenant]
+        return sorted(pool, key=lambda t: -overlap(query, t))[:1]
+
+    def _work(self, session, query, tenant_argument, retrying):
+        if self.bug == "lost-scope" or (self.bug == "retry-lost-scope" and retrying):
+            return self._unscoped(query)
+        if tenant_argument:
+            return self._unscoped(query, tenant_argument)
+        return GuardedAgent.search(self, self.current if self.bug == "stale-context" else session, query)
+
+    def run(self, fail_first=False):
+        queued, self.queue = self.queue, []
+        for handle, session, query, tenant_argument in queued:
+            self.results[handle] = self._work(session, query, tenant_argument, retrying=fail_first)
+
+    def result(self, session, handle):
+        if self.bug != "unbound-results" and self.owners[handle] != session.tenant_id:
+            raise PermissionError("Not your job")
+        return self.results.get(handle)

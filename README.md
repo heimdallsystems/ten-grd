@@ -112,7 +112,9 @@ The host authentication boundary, enforcement client, and storage adapter are
 trusted. An in-process SDK cannot prevent hostile application code from using
 raw credentials or bypassing the client. Custom adapters must execute exactly the
 checked operation and uphold ownership atomically. Read-result validation cannot
-undo an unsafe write by a faulty adapter.
+undo an unsafe write by a faulty adapter. Read the
+[technical specification](https://heimdallsystems.github.io/ten-grd-examples/technical-specification/)
+before writing a custom adapter.
 
 Version 0.2 adds SQLite/PostgreSQL storage, Qdrant retrieval, Redis exact caching,
 Qdrant semantic caching, and LangChain tools. Authentication remains the host

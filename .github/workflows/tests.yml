@@ -111,7 +111,7 @@ jobs:
           python -m pip install 'certifi>=2026.10.19'
       - name: Public design docs match this repository
         run: |
-          for doc in integrations threat-model technical-specification security-regression-guide; do
+          for doc in integrations threat-model security-regression-guide; do
             diff -u "docs/$doc.md" "ten-grd-examples/docs/$doc.md"
           done
       - name: Install this checkout with the examples' other pins

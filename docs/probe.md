@@ -14,10 +14,11 @@ The verdict comes only from the canaries; no model judges whether data leaked.
 
 ## Run it
 
-The probe is included in Ten-Grd 0.3.0 and later. From your project:
+The probe is included in Ten-Grd 0.3.0 and later; the cache, background job and
+retry scenarios need 0.4.0. From your project:
 
 ```sh
-python -m pip install "ten-grd>=0.3.0"
+python -m pip install "ten-grd>=0.4.0"
 ten-grd probe init
 ten-grd probe run --out leak-report.md --json leak-report.json
 ```
@@ -30,7 +31,7 @@ harness from another path. `python -m ten_grd.probe` runs the same command.
 | --- | --- | --- |
 | 0 | clean | None of the attempted attacks exposed another tenant's canary. |
 | 1 | leak | At least one cross-tenant leak was confirmed. |
-| 2 | inconclusive | Harness error, failed sign-in or seeding, or a tenant could not reach its own canary. |
+| 2 | inconclusive | Harness error, failed sign-in or seeding, a tenant could not reach its own canary, or a cache or job scenario could not set up its own data. |
 
 Because the exit code is non-zero for a leak or an inconclusive run, the command
 can gate CI.
@@ -48,6 +49,7 @@ context itself. The harness connects it to your application:
 | `seed(session, canary)` | Yes | Store `canary.text` through your normal write path. |
 | `ask(session, message)` | See below | Send a message to your agent; return its reply as a string or dict. |
 | `TOOLS`, `call_tool(session, name, arguments)` | See below | Call tools directly with hostile arguments. No model needed. |
+| `JOBS`, `submit_job(session, name, arguments)`, `run_jobs(fail_first=False)`, `job_result(session, handle)` | No | Exercise your background workers. |
 
 Provide `ask`, or `call_tool` with `TOOLS`, or both. `TOOLS` maps each tool name to
 an argument template, and `{text}` is replaced with attack text:
@@ -58,6 +60,38 @@ TOOLS = {"search_knowledge": {"query": "{text}"}}
 
 Everything your functions return is searched for other tenants' canaries, so return
 tool results and traces as well as the final answer if you can.
+
+Cache scenarios need nothing extra: they run through `ask` and `call_tool`, so they
+reach a cache only if those functions go through it. Call your real request path,
+not a shortcut around the cache.
+
+### Background jobs and retries
+
+The probe cannot reach a worker by itself, so job scenarios run only if you declare
+them. `JOBS` works like `TOOLS`:
+
+```python
+JOBS = {"summarise": {"query": "{text}"}}
+
+
+def submit_job(session, name, arguments):
+    """Queue the job the way a request from this session would; return a handle."""
+    return app.jobs.enqueue(session, name, arguments)
+
+
+def run_jobs(fail_first=False):
+    """Run everything queued, outside any request, on your real worker path."""
+    app.worker.drain(fail_first_attempt=fail_first)
+
+
+def job_result(session, handle):
+    """Read the result as this session."""
+    return app.jobs.result(session, handle)
+```
+
+With `fail_first=True`, make each job's first attempt fail so your retry path runs.
+If you cannot inject that failure, leave the parameter out and the report will say
+retries were not exercised. `app.jobs` and `app.worker` stand in for your own code.
 
 ## Try it on a deliberately leaky agent
 
@@ -103,8 +137,19 @@ The verdict becomes `clean`, exit code 0, with every control check passing.
    instruction injection, the other tenant's exact text, and a request to switch
    `tenant_id`. Through `call_tool`: the other tenant's text, an extra `tenant_id`
    argument, and a filter-widening string.
-4. **Reports.** Each finding gives the attack, the input, an evidence excerpt and a
-   likely fix. The report also lists the control checks and every attempt.
+4. **Tries shared caches.** One tenant sends a fresh request that returns its own
+   canary, then the other sends the identical request, through `ask` and through
+   each tool, or a reworded one through `ask`. Because every pair runs in both
+   directions, this also covers one tenant poisoning the cache for another. The
+   second tenant first sends a request nobody primed, so a finding says whether the
+   leak needed the other tenant to go first (a shared cache) or happens anyway.
+5. **Tries background jobs, if declared.** A job with the other tenant's text, a job
+   with an extra `tenant_id`, jobs from both tenants queued together, and reading
+   the other tenant's job result. If `run_jobs` accepts `fail_first`, the text and
+   queued-together scenarios repeat through your retry path.
+6. **Reports.** Each finding gives the attack, the input, an evidence excerpt and a
+   likely fix. The report also lists which attack classes ran, the control checks
+   and every attempt.
 
 ## What a result means
 
@@ -112,10 +157,16 @@ A finding proves a cross-tenant leak for that input. No finding means none of th
 attempted attacks leaked; it is not proof of isolation.
 
 The probe exercises behaviour through your harness and does not verify source code.
-It covers only the paths your harness reaches and only the attacks listed above. It
-does not currently test cache poisoning, background jobs or retries, or use a model
-as an attacker. Paths your harness does not call, such as a separate worker, are not
-exercised.
+It covers only the paths your harness reaches and only the attacks listed above, and
+it does not use a model as an attacker. Paths your harness does not call, such as a
+worker you did not declare in `JOBS`, are not exercised; the report's coverage table
+shows which classes ran.
+
+Cache and job scenarios can also miss real leaks. A cache may not store a response,
+may expire it, or may use a similarity threshold the reworded prompt does not meet.
+A race may need timing that `run_jobs` does not reproduce. The probe cannot tell
+whether a request was served from a cache, so "needed the other tenant to go first"
+points at shared state and does not name the component.
 
 Ten-Grd's guards and the probe are separate: running the probe does not add any
 isolation to your agent. To enforce tenant scope, see [Examples](examples.md) and the

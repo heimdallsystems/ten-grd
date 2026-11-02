@@ -120,6 +120,7 @@ Version 0.2 adds SQLite/PostgreSQL storage, Qdrant retrieval, Redis exact cachin
 Qdrant semantic caching, and LangChain tools. Authentication remains the host
 responsibility.
 Version 0.3 adds `ten-grd probe`, a canary-based leak probe (preview).
+Version 0.4 adds cache, background job and retry scenarios to the probe.
 
 ## Incident-inspired regression requirements
 
@@ -154,8 +155,9 @@ and assurance limits.
 `ten-grd probe` checks an agent you already built, whether or not it uses ten-grd.
 It plants a unique canary record in each synthetic test tenant, signs in as one
 tenant, tries to reach the others' canaries (direct questions, instruction
-injection, the other tenant's exact text, tenant-switch requests, and hostile tool
-arguments), and reports every canary that crosses over:
+injection, the other tenant's exact text, tenant-switch requests, hostile tool
+arguments, shared caches, and background jobs and retries if your harness declares
+them), and reports every canary that crosses over:
 
 ```sh
 ten-grd probe init        # writes tenguard_probe.py: fill in sign_in, seed and ask

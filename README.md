@@ -1,4 +1,4 @@
-# Tennant Guard (10-grd)
+# Tenant Guard (10-grd)
 
 Tenant isolation primitives for developers building agentic tools in any environment.
 
